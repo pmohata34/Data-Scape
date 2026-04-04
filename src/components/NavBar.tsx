@@ -8,6 +8,9 @@ export const NavBar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const userDisplayName = user
+    ? user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User'
+    : null;
 
   return (
     <motion.nav
@@ -51,7 +54,7 @@ export const NavBar = () => {
                   <User className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <span className="text-xs font-mono text-muted-foreground hidden sm:block max-w-[120px] truncate">
-                  {user.email}
+                  {userDisplayName}
                 </span>
                 <Button
                   variant="ghost"

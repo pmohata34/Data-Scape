@@ -1,0 +1,77 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="90" x2="1080" y2="610" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#071224"/>
+      <stop offset="1" stop-color="#0E1D36"/>
+    </linearGradient>
+    <linearGradient id="line" x1="220" y1="160" x2="980" y2="540" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00D4FF"/>
+      <stop offset="1" stop-color="#43F6B3"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(360 240) rotate(90) scale(130)">
+      <stop stop-color="#00D4FF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#00D4FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(830 420) rotate(90) scale(170)">
+      <stop stop-color="#43F6B3" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#43F6B3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="24" y="24" width="1152" height="652" rx="40" fill="url(#bg)" stroke="#1C3558" stroke-width="2"/>
+  <rect x="24" y="24" width="1152" height="652" rx="40" fill="url(#glowA)"/>
+  <rect x="24" y="24" width="1152" height="652" rx="40" fill="url(#glowB)"/>
+
+  <g opacity="0.2" stroke="#2C4F77" stroke-width="1">
+    <path d="M120 160H1080"/>
+    <path d="M120 250H1080"/>
+    <path d="M120 340H1080"/>
+    <path d="M120 430H1080"/>
+    <path d="M120 520H1080"/>
+    <path d="M260 100V600"/>
+    <path d="M430 100V600"/>
+    <path d="M600 100V600"/>
+    <path d="M770 100V600"/>
+    <path d="M940 100V600"/>
+  </g>
+
+  <g fill="#91B7D9" opacity="0.8" font-family="monospace" font-size="18">
+    <text x="94" y="108">SOURCE</text>
+    <text x="528" y="108">PARSE</text>
+    <text x="948" y="108">EXPORT</text>
+  </g>
+
+  <g stroke="url(#line)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M180 500L340 390L500 430L650 280L820 330L1020 190"/>
+    <path d="M180 540L320 500L470 520L640 390L850 450L1020 370" opacity="0.6"/>
+  </g>
+
+  <g fill="#00D4FF">
+    <circle cx="180" cy="500" r="8"/>
+    <circle cx="340" cy="390" r="8"/>
+    <circle cx="500" cy="430" r="8"/>
+    <circle cx="650" cy="280" r="8"/>
+    <circle cx="820" cy="330" r="8"/>
+    <circle cx="1020" cy="190" r="8"/>
+  </g>
+
+  <g fill="#43F6B3">
+    <circle cx="180" cy="540" r="7"/>
+    <circle cx="320" cy="500" r="7"/>
+    <circle cx="470" cy="520" r="7"/>
+    <circle cx="640" cy="390" r="7"/>
+    <circle cx="850" cy="450" r="7"/>
+    <circle cx="1020" cy="370" r="7"/>
+  </g>
+
+  <g>
+    <rect x="120" y="120" width="230" height="62" rx="12" fill="#0A1E37" stroke="#1E4D7D"/>
+    <text x="146" y="158" fill="#B6CEE7" font-family="monospace" font-size="22">https://site.com</text>
+
+    <rect x="475" y="120" width="250" height="62" rx="12" fill="#0A1E37" stroke="#1E4D7D"/>
+    <text x="505" y="158" fill="#B6CEE7" font-family="monospace" font-size="22">markdown + links</text>
+
+    <rect x="860" y="120" width="220" height="62" rx="12" fill="#0A1E37" stroke="#1E4D7D"/>
+    <text x="896" y="158" fill="#B6CEE7" font-family="monospace" font-size="22">JSON / CSV</text>
+  </g>
+</svg>

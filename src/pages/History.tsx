@@ -4,12 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { downloadFile } from '@/lib/api/scraper';
 import { ParticleField } from '@/components/ParticleField';
 import { FloatingOrbs } from '@/components/FloatingOrbs';
 import { NavBar } from '@/components/NavBar';
 import {
-  Globe, Clock, Link2, FileText, Trash2, ExternalLink,
-  ArrowLeft, Search, Calendar
+  Globe, Link2, FileText, Trash2, ExternalLink,
+  ArrowLeft, Search, Calendar, FileJson, FileSpreadsheet, X
 } from 'lucide-react';
 
 interface HistoryItem {
@@ -29,6 +30,7 @@ const History = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [selectedItem, setSelectedItem] = useState<HistoryItem | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -63,6 +65,56 @@ const History = () => {
       month: 'short', day: 'numeric', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
     });
+  };
+
+  const buildHistoryPayload = (item: HistoryItem) => ({
+    id: item.id,
+    url: item.url,
+    title: item.title,
+    description: item.description,
+    statusCode: item.status_code,
+    linksCount: item.links_count,
+    contentLength: item.content_length,
+    scrapedAt: item.scraped_at,
+  });
+
+  const toSafeFilename = (item: HistoryItem) => {
+    let fallbackHost = 'history_item';
+    try {
+      fallbackHost = new URL(item.url).hostname || fallbackHost;
+    } catch {
+      fallbackHost = item.url || fallbackHost;
+    }
+
+    return (item.title || fallbackHost)
+      .replace(/[^a-zA-Z0-9_-]+/g, '_')
+      .substring(0, 40);
+  };
+
+  const downloadHistoryAsJSON = (item: HistoryItem) => {
+    const content = JSON.stringify(buildHistoryPayload(item), null, 2);
+    downloadFile(content, `history_${toSafeFilename(item)}.json`, 'application/json');
+  };
+
+  const downloadHistoryAsCSV = (item: HistoryItem) => {
+    const payload = buildHistoryPayload(item);
+    const rows = [
+      ['Field', 'Value'],
+      ['ID', payload.id],
+      ['URL', payload.url],
+      ['Title', payload.title || ''],
+      ['Description', payload.description || ''],
+      ['Status Code', String(payload.statusCode || '')],
+      ['Links Count', String(payload.linksCount || '')],
+      ['Content Length', String(payload.contentLength || '')],
+      ['Scraped At', payload.scrapedAt],
+    ];
+
+    const csv = rows
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    downloadFile(csv, `history_${toSafeFilename(item)}.csv`, 'text/csv');
   };
 
   return (
@@ -152,7 +204,8 @@ const History = () => {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ delay: index * 0.05 }}
                   whileHover={{ scale: 1.01, x: 4 }}
-                  className="group rounded-xl border border-border bg-card/60 p-5 hover:border-primary/30 transition-all cursor-default relative overflow-hidden"
+                  onClick={() => setSelectedItem(item)}
+                  className="group rounded-xl border border-border bg-card/60 p-5 hover:border-primary/30 transition-all cursor-pointer relative overflow-hidden"
                   style={{ backdropFilter: 'blur(10px)' }}
                 >
                   {/* Hover glow */}
@@ -170,6 +223,7 @@ const History = () => {
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="text-xs text-muted-foreground hover:text-primary font-mono truncate block mb-3"
                       >
                         {item.url}
@@ -208,7 +262,10 @@ const History = () => {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => deleteItem(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteItem(item.id);
+                      }}
                       className="text-muted-foreground hover:text-destructive transition-colors p-2 rounded-lg hover:bg-destructive/10"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -220,6 +277,65 @@ const History = () => {
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {selectedItem && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedItem(null)}
+          >
+            <div className="absolute inset-0 bg-black/60" />
+            <motion.div
+              initial={{ y: 24, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 16, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative z-10 w-full max-w-lg rounded-2xl border border-border bg-card/95 p-5"
+              style={{ backdropFilter: 'blur(12px)' }}
+            >
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <p className="text-xs text-primary font-mono mb-1">History Export</p>
+                  <h3 className="font-mono text-foreground font-semibold truncate max-w-[280px]">
+                    {selectedItem.title || 'Untitled Page'}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setSelectedItem(null)}
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-muted-foreground font-mono truncate mb-5">{selectedItem.url}</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  className="font-mono text-xs"
+                  onClick={() => downloadHistoryAsJSON(selectedItem)}
+                >
+                  <FileJson className="w-3.5 h-3.5" />
+                  Download JSON
+                </Button>
+                <Button
+                  variant="outline"
+                  className="font-mono text-xs"
+                  onClick={() => downloadHistoryAsCSV(selectedItem)}
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                  Download CSV
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
