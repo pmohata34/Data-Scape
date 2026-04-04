@@ -339,7 +339,7 @@ const Index = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Extract <span className="text-primary font-semibold">all data</span> from any website — structured or unstructured.
+              Extract all data from any website.
               Export as JSON or CSV instantly.
             </motion.p>
 
