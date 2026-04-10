@@ -28,8 +28,7 @@ export const ScraperForm = ({ onScrape, isLoading }: ScraperFormProps) => {
       transition={{ duration: 0.2 }}
     >
       <motion.div
-        className="flex flex-col sm:flex-row gap-3 p-2 rounded-2xl border bg-card/60"
-        style={{ backdropFilter: 'blur(20px)' }}
+        className="flex flex-col sm:flex-row gap-3 p-2 rounded-2xl glass-panel transition-all"
         animate={{
           borderColor: focused
             ? 'hsl(190 100% 50% / 0.4)'
@@ -75,9 +74,6 @@ export const ScraperForm = ({ onScrape, isLoading }: ScraperFormProps) => {
         </motion.div>
       </motion.div>
 
-      <p className="mt-2 text-xs font-mono text-muted-foreground/80">
-        Public pages only. Login-protected content (Instagram, LinkedIn, etc.) requires official API/OAuth integration.
-      </p>
     </motion.form>
   );
 };

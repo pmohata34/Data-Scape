@@ -7,8 +7,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import History from "./pages/History.tsx";
-import Connections from "./pages/Connections.tsx";
-import OAuthComplete from "./pages/OAuthComplete.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,8 +22,6 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/history" element={<History />} />
-            <Route path="/connections" element={<Connections />} />
-            <Route path="/oauth-complete" element={<OAuthComplete />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

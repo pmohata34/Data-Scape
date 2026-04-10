@@ -118,7 +118,7 @@ const History = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background mesh-bg relative">
       <ParticleField />
       <FloatingOrbs />
       <NavBar />
@@ -159,8 +159,7 @@ const History = () => {
             placeholder="Search history..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 pl-11 pr-4 rounded-xl bg-card/80 border border-border font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-            style={{ backdropFilter: 'blur(10px)' }}
+            className="w-full h-12 pl-11 pr-4 rounded-xl glass-panel font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
           />
         </motion.div>
 
@@ -205,8 +204,7 @@ const History = () => {
                   transition={{ delay: index * 0.05 }}
                   whileHover={{ scale: 1.01, x: 4 }}
                   onClick={() => setSelectedItem(item)}
-                  className="group rounded-xl border border-border bg-card/60 p-5 hover:border-primary/30 transition-all cursor-pointer relative overflow-hidden"
-                  style={{ backdropFilter: 'blur(10px)' }}
+                  className="group rounded-xl glass-panel p-5 hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden"
                 >
                   {/* Hover glow */}
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -294,8 +292,7 @@ const History = () => {
               exit={{ y: 16, opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative z-10 w-full max-w-lg rounded-2xl border border-border bg-card/95 p-5"
-              style={{ backdropFilter: 'blur(12px)' }}
+              className="relative z-10 w-full max-w-lg rounded-2xl glass-panel p-5 shadow-2xl"
             >
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div>

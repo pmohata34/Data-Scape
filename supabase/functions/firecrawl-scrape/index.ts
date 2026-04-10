@@ -242,9 +242,9 @@ const tryApifySocialFallback = async (targetUrl: string) => {
       const username = extractInstagramUsername(targetUrl);
       if (!username) return { success: false, error: 'Could not extract Instagram username from URL.' };
       input = { usernames: [username] };
-    } else if (hostname === 'linkedin.com' || hostname.endsWith('.linkedin.com')) {
-      actorId = 'rocky_spider~linkedin-profile-scraper';
-      input = { profileUrls: [targetUrl] };
+    } else if (hostname === 'linkedin.com' || hostname.endsWith('.linkedin.com') || hostname === 'facebook.com' || hostname.endsWith('.facebook.com')) {
+      // It is impossible to scrape LinkedIn/Facebook publicly without cookies or OAuth.
+      return { success: false, error: 'Target site restricts automated scraping and requires a verified login session or official OAuth API.' };
     } else {
       return null;
     }
@@ -269,6 +269,30 @@ const tryApifySocialFallback = async (targetUrl: string) => {
     }
 
     const profileData = data[0];
+    
+    const extractedLinks: { title: string; href: string }[] = [];
+    
+    // Attempt to extract Instagram latest posts to make them clickable
+    if (Array.isArray(profileData.latestPosts)) {
+      profileData.latestPosts.forEach((post: any, index: number) => {
+        if (post.url) {
+          const captionExcerpt = post.caption ? ` - ${post.caption.substring(0, 40).replace(/\n/g, ' ')}...` : '';
+          extractedLinks.push({
+            title: `Latest Post ${index + 1}${captionExcerpt}`,
+            href: post.url
+          });
+        }
+      });
+    }
+
+    // Extract bio link if present
+    if (profileData.externalUrl || profileData.biographyWithEntities?.raw_url) {
+      extractedLinks.push({
+        title: 'External Bio Link',
+        href: profileData.externalUrl || profileData.biographyWithEntities?.raw_url
+      });
+    }
+
     const markdown = [
       `# Apify Extracted Profile Data`,
       `**URL:** ${targetUrl}`,
@@ -286,7 +310,7 @@ const tryApifySocialFallback = async (targetUrl: string) => {
       data: {
         markdown: markdown,
         html: '',
-        links: [],
+        links: extractedLinks,
         metadata: {
           title: `Apify Extracted Profile`,
           description: 'Social data retrieved via Apify actor',
@@ -301,12 +325,17 @@ const tryApifySocialFallback = async (targetUrl: string) => {
     return { success: false, error: err instanceof Error ? err.message : 'Unknown Apify crash' };
   }
 };
-
 const tryFallbackChain = async (targetUrl: string) => {
   try {
     const apifyResult = await tryApifySocialFallback(targetUrl);
     if (apifyResult) {
-      return apifyResult;
+      if (apifyResult.success) {
+        return apifyResult;
+      }
+      // If Apify explicitly failed due to site logic (like LinkedIn guard), return it immediately
+      if (apifyResult.error?.includes('Target site restricts')) {
+        return apifyResult;
+      }
     }
   } catch (error) {
     console.error('Apify social fallback failed:', error);

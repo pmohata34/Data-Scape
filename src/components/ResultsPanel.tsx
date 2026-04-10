@@ -41,7 +41,7 @@ export const ResultsPanel = ({ result }: ResultsPanelProps) => {
   return (
     <div className="w-full space-y-4 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
       {/* Header with metadata */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-lg bg-secondary border border-border">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl glass-panel">
         <div className="min-w-0 flex-1">
           <h3 className="font-mono font-semibold text-foreground truncate">
             {metadata?.title || 'Scraped Data'}
@@ -76,7 +76,7 @@ export const ResultsPanel = ({ result }: ResultsPanelProps) => {
 
       {/* Content tabs */}
       <Tabs defaultValue="markdown" className="w-full">
-        <TabsList className="bg-secondary border border-border">
+        <TabsList className="glass-panel">
           <TabsTrigger value="markdown" className="font-mono text-xs">Content</TabsTrigger>
           <TabsTrigger value="links" className="font-mono text-xs">
             Links ({links.length})
@@ -86,7 +86,7 @@ export const ResultsPanel = ({ result }: ResultsPanelProps) => {
         </TabsList>
 
         <TabsContent value="markdown" className="mt-3">
-          <div className="rounded-lg bg-secondary border border-border p-4 max-h-[500px] overflow-auto">
+          <div className="rounded-xl glass-panel p-4 max-h-[500px] overflow-auto">
             <pre className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed">
               {markdown || 'No content extracted'}
             </pre>
@@ -94,25 +94,29 @@ export const ResultsPanel = ({ result }: ResultsPanelProps) => {
         </TabsContent>
 
         <TabsContent value="links" className="mt-3">
-          <div className="rounded-lg bg-secondary border border-border p-4 max-h-[500px] overflow-auto space-y-1">
-            {links.length > 0 ? links.map((link: string, i: number) => (
-              <a
-                key={i}
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-primary hover:text-primary/80 truncate font-mono"
-              >
-                {link}
-              </a>
-            )) : (
+          <div className="rounded-xl glass-panel p-4 max-h-[500px] overflow-auto space-y-1">
+            {links.length > 0 ? links.map((link: any, i: number) => {
+              const href = typeof link === 'string' ? link : link.href;
+              const title = typeof link === 'string' ? link : link.title;
+              return (
+                <a
+                  key={i}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-sm text-primary hover:text-primary/80 truncate font-mono"
+                >
+                  {title} {typeof link !== 'string' ? <span className="opacity-50 text-xs ml-2">({href})</span> : null}
+                </a>
+              );
+            }) : (
               <p className="text-muted-foreground text-sm">No links found</p>
             )}
           </div>
         </TabsContent>
 
         <TabsContent value="metadata" className="mt-3">
-          <div className="rounded-lg bg-secondary border border-border p-4 max-h-[500px] overflow-auto">
+          <div className="rounded-xl glass-panel p-4 max-h-[500px] overflow-auto">
             <pre className="text-sm text-foreground font-mono">
               {JSON.stringify(metadata, null, 2)}
             </pre>
@@ -120,7 +124,7 @@ export const ResultsPanel = ({ result }: ResultsPanelProps) => {
         </TabsContent>
 
         <TabsContent value="raw" className="mt-3">
-          <div className="rounded-lg bg-secondary border border-border p-4 max-h-[500px] overflow-auto">
+          <div className="rounded-xl glass-panel p-4 max-h-[500px] overflow-auto">
             <pre className="text-xs text-muted-foreground font-mono">
               {JSON.stringify(scraped, null, 2)}
             </pre>

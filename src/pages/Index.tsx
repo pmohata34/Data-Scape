@@ -10,7 +10,6 @@ import { GlitchText } from '@/components/GlitchText';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { NavBar } from '@/components/NavBar';
 import { scrapeWebsite, ScrapeResult } from '@/lib/api/scraper';
-import { getSocialProviderFromUrl, startSocialConnection, type SocialProvider } from '@/lib/api/social';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -347,84 +346,7 @@ const Index = () => {
             });
           }
         }
-      } else if (data.requiresConnection && (data.provider === 'instagram' || data.provider === 'linkedin')) {
-        // Only open popup if OAuth is actually needed
-        if (!opts?.skipOAuthPopup) {
-          oauthPopup = openBlankPopup();
-          if (!oauthPopup) {
-            toast({
-              title: 'Popup blocked',
-              description: 'Please allow popups to continue OAuth login.',
-              variant: 'destructive',
-            });
-            setIsLoading(false);
-            return;
-          }
-        }
-        const provider = data.provider as SocialProvider;
-        
-        // Skip OAuth popup if already attempted (background retry after login)
-        if (opts?.skipOAuthPopup) {
-          toast({
-            title: 'Still loading',
-            description: 'Waiting for connection to sync... Please try again in a moment.',
-            variant: 'destructive',
-          });
-          return;
-        }
-        
-        setPendingOAuthUrl(url);
-        toast({
-          title: `Connect your ${provider} account`,
-          description: `Log in to extract your ${provider} ${provider === 'instagram' ? 'posts, followers, likes' : 'profile info'}...`,
-        });
-
-        try {
-          const redirectPath = `/?url=${encodeURIComponent(url)}`;
-          const oauth = await startSocialConnection(provider, redirectPath);
-          oauthPopup!.location.href = oauth.authUrl;
-          oauthPopup!.focus();
-        } catch (err) {
-          if (oauthPopup && !oauthPopup.closed) {
-            oauthPopup.close();
-          }
-
-          const message = err instanceof Error ? err.message : 'Failed to start OAuth flow';
-          toast({
-            title: 'OAuth setup required',
-            description: message.includes('not configured')
-              ? 'Set up Facebook/Instagram OAuth in Supabase, then retry. The login popup will close automatically after that.'
-              : message,
-            variant: 'destructive',
-          });
-          return;
-        }
       } else {
-        const errText = (data.error || '').toLowerCase();
-        const loginUrl = getOfficialLoginUrlForTarget(url);
-
-        if (loginUrl && (errText.includes('require login') || errText.includes('requires login') || errText.includes('sign in') || errText.includes('log in') || errText.includes('requiresconnection'))) {
-          toast({
-            title: 'Login required',
-            description: 'Redirecting to official login page...',
-          });
-          if (oauthPopup && !oauthPopup.closed) {
-            oauthPopup.close();
-          }
-          window.open(loginUrl, '_blank', 'noopener,noreferrer');
-          return;
-        }
-
-        if (errText.includes('log in again') || errText.includes('authentication required') || errText.includes('invalid jwt') || errText.includes('session expired')) {
-          toast({
-            title: 'Session expired',
-            description: 'Please log in again to continue scraping.',
-            variant: 'destructive',
-          });
-          navigate('/auth');
-          return;
-        }
-
         const failMsg = getScrapeFailureMessage(url, data.error);
         toast({
           title: 'Scrape failed',
@@ -442,85 +364,15 @@ const Index = () => {
         variant: 'destructive',
       });
     } finally {
-      if (oauthPopup && !oauthPopup.closed) {
-        // Keep the popup open only when it's being used for auth redirects.
-        // It will be closed by the OAuth completion page on success.
-      }
+
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    const onOAuthComplete = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
 
-      const payload = event.data as {
-        type?: string;
-        connected?: boolean;
-        redirectTo?: string;
-      };
-
-      if (payload?.type !== 'oauth-complete') return;
-
-      if (!payload.connected) {
-        toast({
-          title: 'Connection failed',
-          description: 'Could not connect your social account. Please try again.',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      const fallbackUrl = (() => {
-        const redirectTo = payload.redirectTo || '';
-        if (!redirectTo) return null;
-        try {
-          const parsed = new URL(redirectTo, window.location.origin);
-          return parsed.searchParams.get('url');
-        } catch {
-          return null;
-        }
-      })();
-
-      const targetUrl = pendingOAuthUrl || fallbackUrl;
-      if (!targetUrl || isLoading) return;
-
-      toast({
-        title: 'Account connected',
-        description: 'Extracting your data in background...',
-      });
-      
-      // Wait a bit for token to be saved to database, then retry scrape
-      setTimeout(() => {
-        void handleScrape(targetUrl, { skipOAuthPopup: true, background: true });
-      }, 1500);
-    };
-
-    window.addEventListener('message', onOAuthComplete);
-    return () => {
-      window.removeEventListener('message', onOAuthComplete);
-    };
-  }, [isLoading, pendingOAuthUrl, toast, user, handleScrape]);
-
-  useEffect(() => {
-    const oauthDone = searchParams.get('oauth_done') === '1';
-    const url = searchParams.get('url');
-
-    if (!oauthDone || !url || !user || isLoading) return;
-
-    const nextParams = new URLSearchParams(searchParams);
-    nextParams.delete('oauth_done');
-    setSearchParams(nextParams, { replace: true });
-
-    toast({
-      title: 'Login successful',
-      description: 'Continuing scrape in background...',
-    });
-    void handleScrape(url, { skipOAuthPopup: true, background: true });
-  }, [isLoading, searchParams, setSearchParams, toast, user]);
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background mesh-bg relative">
       <ParticleField />
       <FloatingOrbs />
       <NavBar />
@@ -588,8 +440,7 @@ const Index = () => {
             >
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <motion.div
-                  className="relative rounded-2xl overflow-hidden border border-primary/20 bg-card/40 md:col-span-3"
-                  style={{ backdropFilter: 'blur(10px)' }}
+                  className="relative rounded-2xl overflow-hidden glass-panel md:col-span-3 transition-transform"
                   whileHover={{ y: -3 }}
                   transition={{ duration: 0.25 }}
                 >
