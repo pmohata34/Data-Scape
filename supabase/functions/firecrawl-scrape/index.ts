@@ -228,7 +228,8 @@ const tryInstagramMirrorFallback = async (targetUrl: string) => {
 const tryApifySocialFallback = async (targetUrl: string) => {
   const token = Deno.env.get('APIFY_API_TOKEN');
   if (!token || token.includes('your_apify_api_token')) {
-    return { success: false, error: 'Apify API token is missing or placeholder in backend.' };
+    console.error('Apify fallback skipped: APIFY_API_TOKEN is missing from environment.');
+    return { success: false, error: 'Apify configuration is missing in the cloud environment (APIFY_API_TOKEN).' };
   }
 
   try {
@@ -259,7 +260,8 @@ const tryApifySocialFallback = async (targetUrl: string) => {
 
     if (!response.ok) {
       const errText = await response.text();
-      return { success: false, error: `Apify API failed (${response.status}): ${errText}` };
+      console.error(`Apify actor run failed for ${actorId}:`, response.status, errText);
+      return { success: false, error: `External scraper failed (${response.status}). This often means the target site is blocking access.` };
     }
 
     const data = await response.json();
