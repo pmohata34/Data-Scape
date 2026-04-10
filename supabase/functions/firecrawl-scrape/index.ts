@@ -243,8 +243,7 @@ const tryApifySocialFallback = async (targetUrl: string) => {
       if (!username) return { success: false, error: 'Could not extract Instagram username from URL.' };
       input = { usernames: [username] };
     } else if (hostname === 'linkedin.com' || hostname.endsWith('.linkedin.com') || hostname === 'facebook.com' || hostname.endsWith('.facebook.com')) {
-      // It is impossible to scrape LinkedIn/Facebook publicly without cookies or OAuth.
-      return { success: false, error: 'Target site restricts automated scraping and requires a verified login session or official OAuth API.' };
+      return { success: false, error: 'LinkedIn and Facebook scraping is currently disabled. Please use official APIs for these platforms.' };
     } else {
       return null;
     }
