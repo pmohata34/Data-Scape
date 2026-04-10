@@ -33,11 +33,17 @@ const Auth = () => {
         navigate('/');
       }
     } else {
-      const { error } = await signUp(email, password, fullName);
+      const { error, requiresEmailVerification } = await signUp(email, password, fullName);
       if (error) {
         toast({ title: 'Sign up failed', description: error, variant: 'destructive' });
+      } else if (requiresEmailVerification) {
+        toast({
+          title: 'Email verification is enabled',
+          description: 'Disable email confirmation in Supabase Auth settings to allow instant login.',
+        });
       } else {
-        toast({ title: 'Check your email', description: 'We sent you a verification link.' });
+        toast({ title: 'Account created', description: 'You are now logged in.' });
+        navigate('/');
       }
     }
     setLoading(false);

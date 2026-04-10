@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Zap, History, LogOut, User } from 'lucide-react';
+import { Zap, History, LogOut, User, Share2 } from 'lucide-react';
 
 export const NavBar = () => {
   const { user, signOut } = useAuth();
@@ -49,6 +49,7 @@ export const NavBar = () => {
                 <History className="w-3.5 h-3.5" />
                 History
               </Button>
+
               <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border">
                 <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                   <User className="w-3.5 h-3.5 text-primary" />

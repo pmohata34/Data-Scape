@@ -8,6 +8,7 @@ What You Get
 
 - Secure Login - Your data stays yours, no tracking
 - Scrape Any Website - Paste URL, get data automatically
+- Connect Instagram and LinkedIn - Use official OAuth/API access for approved account data
 - Export Formats - Download as JSON or CSV
 - Keep History - All scrapes saved in your account
 - Lightning Fast - Results in seconds
@@ -54,8 +55,13 @@ bun install
 Create `.env` file in root directory:
 
 ```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_publishable_key
+FACEBOOK_APP_ID=your_facebook_app_id
+FACEBOOK_APP_SECRET=your_facebook_app_secret
+LINKEDIN_CLIENT_ID=your_linkedin_client_id
+LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 Note: Get these from Supabase project settings → API
@@ -138,6 +144,8 @@ Backend (Supabase):
 2. Run SQL migrations
 3. Deploy edge functions
 4. Configure auth settings
+
+If you plan to use the social connectors, deploy `supabase/functions/social-oauth` and `supabase/functions/social-data` and set the Facebook/LinkedIn OAuth credentials before connecting accounts from the new Connections page.
 
 ---
 

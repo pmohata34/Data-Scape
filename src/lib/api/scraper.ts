@@ -1,10 +1,14 @@
 import { supabase } from '@/integrations/supabase/client';
+import { fetchApprovedSocialData, getSocialProviderFromUrl } from '@/lib/api/social';
 
 export type ScrapeFormat = 'markdown' | 'html' | 'links' | 'rawHtml';
 
 export interface ScrapeResult {
   success: boolean;
   error?: string;
+  provider?: string;
+  blocked?: boolean;
+  requiresConnection?: boolean;
   data?: {
     markdown?: string;
     html?: string;
@@ -27,7 +31,26 @@ export async function scrapeWebsite(url: string, formats: ScrapeFormat[]): Promi
   });
 
   if (error) {
-    return { success: false, error: error.message };
+    if (error.message?.includes('non-2xx')) {
+      const maybeContext = (error as { context?: Response }).context;
+      if (maybeContext?.status === 401) {
+        await supabase.auth.signOut();
+        return { success: false, error: 'session expired. Please re-authenticate.' };
+      }
+      
+      if (maybeContext) {
+        try {
+          const details = await maybeContext.json() as { error?: string };
+          if (details?.error) {
+            return { success: false, error: details.error };
+          }
+        } catch {
+          // Fall through to default error message.
+        }
+      }
+    }
+
+    return { success: false, error: error.message || 'Scrape request failed' };
   }
 
   return data;

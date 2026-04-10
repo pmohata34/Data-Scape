@@ -1,1 +1,4 @@
 project_id = "yhfidotjxfmfpopxvaic"
+
+[functions.social-data]
+verify_jwt = false

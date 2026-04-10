@@ -74,6 +74,10 @@ export const ScraperForm = ({ onScrape, isLoading }: ScraperFormProps) => {
           </Button>
         </motion.div>
       </motion.div>
+
+      <p className="mt-2 text-xs font-mono text-muted-foreground/80">
+        Public pages only. Login-protected content (Instagram, LinkedIn, etc.) requires official API/OAuth integration.
+      </p>
     </motion.form>
   );
 };

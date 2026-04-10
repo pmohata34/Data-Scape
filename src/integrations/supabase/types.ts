@@ -38,6 +38,87 @@ export type Database = {
         }
         Relationships: []
       }
+      oauth_states: {
+        Row: {
+          code_verifier: string
+          app_origin: string
+          created_at: string
+          id: string
+          provider: string
+          redirect_to: string
+          state: string
+          user_id: string
+        }
+        Insert: {
+          code_verifier: string
+          app_origin: string
+          created_at?: string
+          id?: string
+          provider: string
+          redirect_to?: string
+          state: string
+          user_id: string
+        }
+        Update: {
+          code_verifier?: string
+          app_origin?: string
+          created_at?: string
+          id?: string
+          provider?: string
+          redirect_to?: string
+          state?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      social_connections: {
+        Row: {
+          access_token: string
+          connected_at: string
+          external_account_id: string | null
+          external_account_name: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json
+          provider: string
+          refresh_token: string | null
+          scope: string | null
+          token_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          connected_at?: string
+          external_account_id?: string | null
+          external_account_name?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          provider: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          connected_at?: string
+          external_account_id?: string | null
+          external_account_name?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          provider?: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       scrape_history: {
         Row: {
           content_length: number | null

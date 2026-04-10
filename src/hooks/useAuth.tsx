@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null; requiresEmailVerification: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -43,11 +43,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         emailRedirectTo: window.location.origin,
       },
     });
-    return { error: error?.message ?? null };
+
+    // If email confirmations are disabled in Supabase Auth settings,
+    // signUp returns an active session and no verification is required.
+    const requiresEmailVerification = !data.session;
+    return { error: error?.message ?? null, requiresEmailVerification };
   };
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      const message = error.message?.toLowerCase() || '';
+      if (message.includes('email not confirmed') || message.includes('email_not_confirmed')) {
+        await supabase.auth.resend({
+          type: 'signup',
+          email,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
+        });
+
+        return {
+          error:
+            'Email not confirmed. We sent a new confirmation link. For testing without verification, disable Confirm email in Supabase Auth settings and create a new account.',
+        };
+      }
+    }
+
     return { error: error?.message ?? null };
   };
 

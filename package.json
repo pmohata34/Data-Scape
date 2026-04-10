@@ -13,7 +13,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "deploy:social-data": "npx supabase functions deploy social-data --project-ref axodpcdiicgxohyefidw --use-api",
+    "deploy:social-oauth": "npx supabase functions deploy social-oauth --project-ref axodpcdiicgxohyefidw --use-api"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
