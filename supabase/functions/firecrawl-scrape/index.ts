@@ -239,10 +239,8 @@ const tryApifySocialFallback = async (targetUrl: string) => {
     let input: Record<string, unknown> = {};
 
     if (hostname === 'instagram.com' || hostname.endsWith('.instagram.com')) {
-      actorId = 'apify~instagram-profile-scraper';
-      const username = extractInstagramUsername(targetUrl);
-      if (!username) return { success: false, error: 'Could not extract Instagram username from URL.' };
-      input = { usernames: [username] };
+      actorId = 'apify/instagram-profile-scraper';
+      input = { directUrls: [targetUrl] };
     } else if (hostname === 'linkedin.com' || hostname.endsWith('.linkedin.com') || hostname === 'facebook.com' || hostname.endsWith('.facebook.com')) {
       return { success: false, error: 'LinkedIn and Facebook scraping is currently disabled. Please use official APIs for these platforms.' };
     } else {
@@ -261,7 +259,10 @@ const tryApifySocialFallback = async (targetUrl: string) => {
     if (!response.ok) {
       const errText = await response.text();
       console.error(`Apify actor run failed for ${actorId}:`, response.status, errText);
-      return { success: false, error: `External scraper failed (${response.status}). This often means the target site is blocking access.` };
+      return { 
+        success: false, 
+        error: `External scraper failed with status ${response.status}. Details: ${errText.substring(0, 100)}` 
+      };
     }
 
     const data = await response.json();
