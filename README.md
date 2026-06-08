@@ -1,203 +1,78 @@
 # DataScrape
 
-Extract structured data from any website instantly. Save as JSON or CSV. No hassle, just results.
+Extract structured data from websites and export the results as JSON or CSV. DataScrape combines a clean authenticated UI with Supabase, Firecrawl, Apify, and edge functions for a practical scraping workflow.
 
----
+## Features
 
-What You Get
+- Secure login with Supabase Auth
+- Submit a URL and extract structured website data
+- Instagram and LinkedIn integrations through Apify and RapidAPI fallback flows
+- Export scrape results as JSON or CSV
+- Save scrape history per user account
+- Responsive UI for desktop, tablet, and mobile
+- Row-level security and authenticated database access
 
-- Secure Login - Your data stays yours, no tracking
-- Scrape Any Website - Paste URL, get data automatically
-- Connect Instagram and LinkedIn - Powered by Apify and RapidAPI fallback integrations
-- Export Formats - Download as JSON or CSV
-- Keep History - All scrapes saved in your account
-- Lightning Fast - Results in seconds
-- Beautiful UI - Clean, modern, easy to use
-- Works Everywhere - Desktop, tablet, mobile
-- Built-in Security - Auth + encryption included
+## Tech Stack
 
----
+- React 18, TypeScript, Vite
+- Tailwind CSS and Framer Motion
+- Supabase Auth, PostgreSQL, and Edge Functions
+- Firecrawl, Apify, and RapidAPI integrations
+- Vercel frontend deployment
 
-Tech Stack
-
-Frontend: React 18 • TypeScript • Vite • Tailwind CSS • Framer Motion
-
-Backend: Supabase (Database + Auth) • Edge Functions • PostgreSQL • Firecrawl • Apify
-
-Deployment: Vercel (frontend) + Supabase (backend)
-
----
-
-Getting Started
-
-Prerequisites
-- Node.js 18+ or Bun
-- Git
-- Code editor (VS Code recommended)
-
-Installation
-
-1. Clone repository
+## Getting Started
 
 ```bash
-git clone https://github.com/yourusername/datascrape.git
-cd datascrape
+npm install
+npm run dev
 ```
 
-2. Install dependencies
-
-```bash
-bun install
-```
-
-3. Set up environment
-
-Create `.env` file in root directory:
+Create a `.env` file in the project root:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_publishable_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-
-# External APIs
 FIRECRAWL_API_KEY=your_firecrawl_api_key
 APIFY_API_TOKEN=your_apify_api_token
 RAPIDAPI_KEY=your_rapidapi_key
 ```
 
-Note: Get these from Supabase project settings → API
+The app runs locally at `http://localhost:5173`.
 
-4. Run locally
-
-```bash
-bun run dev
-```
-
-App opens at http://localhost:5173
-
-Available Commands
+## Available Commands
 
 ```bash
-bun run dev          # Start dev server (localhost:5173)
-bun run build        # Build for production
-bun run preview      # Preview production build
-bun run test         # Run tests
-bun run test:watch   # Tests in watch mode
-bun run lint         # Check code style
+npm run dev
+npm run build
+npm run preview
+npm run test
+npm run lint
 ```
 
----
+## How It Works
 
-How It Works
+1. Sign up or log in.
+2. Submit a website URL.
+3. DataScrape extracts and stores structured results.
+4. Download the saved scrape as JSON or CSV.
 
-1. Sign Up - Create account with email
-2. Submit URL - DataScrape extracts data
-3. Data Saved - Results stored in your account
-4. Download - Get JSON or CSV anytime
+## Project Structure
 
-That's it. Simple and direct.
-
----
-
-Project Structure
-
-```
+```text
 src/
-├── pages/          # Home, Auth, History
-├── components/     # UI widgets & forms
-├── hooks/          # Custom React hooks
-├── lib/            # Utilities & API calls
-└── integrations/   # Supabase client
+  pages/          App pages
+  components/     UI widgets and forms
+  hooks/          Custom React hooks
+  lib/            Utilities and API calls
+  integrations/   Supabase client
 
 supabase/
-├── functions/      # Edge functions (firecrawl-scrape)
-└── migrations/     # Database schema
-
-public/             # Static assets
-index.html          # Main entry
-package.json        # Dependencies
-vite.config.ts      # Build config
+  functions/      Edge functions
+  migrations/     Database schema
 ```
 
----
+## Deployment
 
-Security
-
-Your data is protected:
-- JWT authentication
-- Database row-level security
-- HTTPS encryption
-- No selling user data
-- No tracking
-
----
-
-Deploy to Production
-
-Frontend (Vercel):
-1. Push code to GitHub
-2. Connect repo to vercel.com
-3. Add env variables in Vercel settings
-4. Deploy (automatic on push)
-
-Backend (Supabase):
-1. Create Supabase project
-2. Run SQL migrations
-3. Deploy edge functions
-4. Configure auth settings
-
-If you plan to use the scraping engine, deploy `supabase/functions/firecrawl-scrape` and ensure `FIRECRAWL_API_KEY`, `APIFY_API_TOKEN`, and `RAPIDAPI_KEY` are set as cloud secrets.
-
----
-
-Troubleshooting
-
-Login issues?
-- Check .env has correct Supabase keys
-- Open F12 console for error details
-- Verify Supabase project is active
-
-Scraping not working?
-- User must be logged in first
-- Check website is accessible
-- Review Supabase dashboard logs
-
-Build errors?
-- Delete node_modules & bun.lockb
-- Run: bun install
-- Restart dev server
-
----
-
-What's Coming
-
-- Batch URL processing
-- Custom CSS selectors
-- Data visualization
-- Scheduled scraping
-- Developer API
-
----
-
-Contributing
-
-Found a bug or have ideas?
-
-1. Fork the repository
-2. Create feature branch: git checkout -b feature/name
-3. Commit: git commit -m 'Add feature'
-4. Push: git push origin feature/name
-5. Open Pull Request
-
----
-
-Need Help?
-
-- Check code comments
-- Open GitHub issues
-- Review Supabase docs: supabase.com/docs
-- Check Vercel docs: vercel.com/docs
-
----
-
-Built with React • Tailwind • Supabase • Vercel
+- Frontend: deploy to Vercel.
+- Backend: create a Supabase project, run migrations, deploy edge functions, and configure cloud secrets.
